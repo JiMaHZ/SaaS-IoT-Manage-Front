@@ -1,14 +1,16 @@
 <template>
   <basic-container>
     <avue-crud :option="option"
+               :table-loading="loading"
                :data="data"
                :page="page"
-               @row-del="rowDel"
-               v-model="form"
                :permission="permissionList"
+               :before-open="beforeOpen"
+               v-model="form"
+               ref="crud"
                @row-update="rowUpdate"
                @row-save="rowSave"
-               :before-open="beforeOpen"
+               @row-del="rowDel"
                @search-change="searchChange"
                @search-reset="searchReset"
                @selection-change="selectionChange"
@@ -20,20 +22,16 @@
                    size="small"
                    icon="el-icon-delete"
                    plain
-                   v-if="permission.notice_delete"
+                   v-if="permission.uploaddata_delete"
                    @click="handleDelete">删 除
         </el-button>
-      </template>
-      <template slot-scope="{row}"
-                slot="category">
-        <el-tag>{{row.categoryName}}</el-tag>
       </template>
     </avue-crud>
   </basic-container>
 </template>
 
 <script>
-  import {getList, remove, update, add, getNotice} from "@/api/dept/notice";
+  import {getList, getDetail, add, update, remove} from "@/api/iotplatform/uploaddata";
   import {mapGetters} from "vuex";
 
   export default {
@@ -41,8 +39,10 @@
       return {
         form: {},
         query: {},
+        loading: true,
         page: {
-          pageSize: 10,
+          pageSizes: [5,10, 20, 30, 40,50,100],
+          pageSize: 5,
           currentPage: 1,
           total: 0
         },
@@ -53,55 +53,97 @@
           index: true,
           viewBtn: true,
           selection: true,
+          delBtn: true,
+          editBtn: true,
+          menuWidth:120,
+          align: "center",
           column: [
+            // {
+            //   label: "",
+            //   prop: "id",
+            //   rules: [{
+            //     required: true,
+            //     message: "请输入",
+            //     trigger: "blur"
+            //   }]
+            // },
             {
-              label: "通知标题",
-              prop: "title",
-              row: true,
+              label: "网关地址",
+              prop: "gatewayAddress",
               search: true,
-              rules: [{
-                required: true,
-                message: "请输入通知标题",
-                trigger: "blur"
-              }]
-            },
-            {
-              label: "通知类型",
-              type: "select",
-              row: true,
-              dicUrl: "/api/blade-system/dict/dictionary?code=notice",
-              props: {
-                label: "dictValue",
-                value: "dictKey"
-              },
-              slot: true,
-              prop: "category",
-              search: true,
-              rules: [{
-                required: true,
-                message: "请输入通知类型",
-                trigger: "blur"
-              }]
-            },
-            {
-              label: "通知日期",
-              prop: "releaseTime",
-              type: "date",
-              format: "yyyy-MM-dd hh:mm:ss",
-              valueFormat: "yyyy-MM-dd hh:mm:ss",
-              rules: [{
-                required: true,
-                message: "请输入通知日期",
-                trigger: "blur"
-              }]
-            },
-            {
-              label: "通知内容",
-              prop: "content",
+              // gutter: 12,
+              labelWidth: 120,
               span: 24,
-              minRows: 6,
-              type: "textarea"
-            }
+              rules: [{
+                required: true,
+                message: "请输入网关地址",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "采控器地址",
+              prop: "collectorAddress",
+              search: true,
+              labelWidth: 120,
+              span: 24,
+              rules: [{
+                required: true,
+                message: "请输入采控器地址",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "命令",
+              prop: "command",
+              labelWidth: 120,
+              rules: [{
+                required: true,
+                message: "请输入命令",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "设备键",
+              prop: "deviceKey",
+              rules: [{
+                required: true,
+                message: "请输入设备键",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "设备键",
+              prop: "deviceValue",
+              labelWidth: 120,
+              span: 24,
+              rules: [{
+                required: true,
+                message: "请输入设备键",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "上传时间",
+              prop: "uploadTime",
+              labelWidth: 120,
+              width: 98,
+              rules: [{
+                required: true,
+                message: "请输入上传时间",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "远程连接地址",
+              prop: "remoteAddress",
+              labelWidth: 120,
+              span: 24,
+              rules: [{
+                required: true,
+                message: "请输入远程连接地址",
+                trigger: "blur"
+              }]
+            },
           ]
         },
         data: []
@@ -111,10 +153,10 @@
       ...mapGetters(["permission"]),
       permissionList() {
         return {
-          addBtn: this.vaildData(this.permission.notice_add, false),
-          viewBtn: this.vaildData(this.permission.notice_view, false),
-          delBtn: this.vaildData(this.permission.notice_delete, false),
-          editBtn: this.vaildData(this.permission.notice_edit, false)
+          addBtn: this.vaildData(this.permission.uploaddata_add, false),
+          viewBtn: this.vaildData(this.permission.uploaddata_view, true),
+          delBtn: this.vaildData(this.permission.uploaddata_delete, false),
+          editBtn: this.vaildData(this.permission.uploaddata_edit, false)
         };
       },
       ids() {
@@ -169,17 +211,6 @@
             });
           });
       },
-      searchReset() {
-        this.query = {};
-        this.onLoad(this.page);
-      },
-      searchChange(params) {
-        this.query = params;
-        this.onLoad(this.page, params);
-      },
-      selectionChange(list) {
-        this.selectionList = list;
-      },
       handleDelete() {
         if (this.selectionList.length === 0) {
           this.$message.warning("请选择至少一条数据");
@@ -203,13 +234,27 @@
           });
       },
       beforeOpen(done, type) {
-        console.log("before")
         if (["edit", "view"].includes(type)) {
-          getNotice(this.form.id).then(res => {
+          getDetail(this.form.id).then(res => {
             this.form = res.data.data;
           });
         }
         done();
+      },
+      searchReset() {
+        this.query = {};
+        this.onLoad(this.page);
+      },
+      searchChange(params) {
+        this.query = params;
+        this.onLoad(this.page, params);
+      },
+      selectionChange(list) {
+        this.selectionList = list;
+      },
+      selectionClear() {
+        this.selectionList = [];
+        this.$refs.crud.toggleSelection();
       },
       currentChange(currentPage){
         this.page.currentPage = currentPage;
@@ -218,10 +263,13 @@
         this.page.pageSize = pageSize;
       },
       onLoad(page, params = {}) {
+        this.loading = true;
         getList(page.currentPage, page.pageSize, Object.assign(params, this.query)).then(res => {
           const data = res.data.data;
           this.page.total = data.total;
           this.data = data.records;
+          this.loading = false;
+          this.selectionClear();
         });
       }
     }

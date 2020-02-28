@@ -10,12 +10,12 @@
         <img class="img"
              src="/img/logo.png"
              alt="">
-        <p class="title">{{ $t('login.info') }}</p>
+        <p class="title">IoT SaaS平台</p>
       </div>
       <div class="login-border">
         <div class="login-main">
           <h4 class="login-title">
-            {{ $t('login.title') }}{{website.title}}
+            {{ $t('login.title') }}IoT
             <top-lang></top-lang>
           </h4>
           <userLogin v-if="activeName==='user'"></userLogin>
@@ -24,10 +24,10 @@
           <div class="login-menu">
             <a href="#"
                @click.stop="activeName='user'">{{ $t('login.userLogin') }}</a>
-            <a href="#"
+            <!-- <a href="#"
                @click.stop="activeName='code'">{{ $t('login.phoneLogin') }}</a>
             <a href="#"
-               @click.stop="activeName='third'">{{ $t('login.thirdLogin') }}</a>
+               @click.stop="activeName='third'">{{ $t('login.thirdLogin') }}</a> -->
           </div>
         </div>
 

@@ -1,14 +1,16 @@
 <template>
   <basic-container>
     <avue-crud :option="option"
+               :table-loading="loading"
                :data="data"
                :page="page"
-               @row-del="rowDel"
-               v-model="form"
                :permission="permissionList"
+               :before-open="beforeOpen"
+               v-model="form"
+               ref="crud"
                @row-update="rowUpdate"
                @row-save="rowSave"
-               :before-open="beforeOpen"
+               @row-del="rowDel"
                @search-change="searchChange"
                @search-reset="searchReset"
                @selection-change="selectionChange"
@@ -20,20 +22,16 @@
                    size="small"
                    icon="el-icon-delete"
                    plain
-                   v-if="permission.notice_delete"
+                   v-if="permission.ashbin_delete"
                    @click="handleDelete">删 除
         </el-button>
-      </template>
-      <template slot-scope="{row}"
-                slot="category">
-        <el-tag>{{row.categoryName}}</el-tag>
       </template>
     </avue-crud>
   </basic-container>
 </template>
 
 <script>
-  import {getList, remove, update, add, getNotice} from "@/api/dept/notice";
+  import {getList, getDetail, add, update, remove} from "@/api/iot/ashbin";
   import {mapGetters} from "vuex";
 
   export default {
@@ -41,6 +39,7 @@
       return {
         form: {},
         query: {},
+        loading: true,
         page: {
           pageSize: 10,
           currentPage: 1,
@@ -55,53 +54,87 @@
           selection: true,
           column: [
             {
-              label: "通知标题",
-              prop: "title",
-              row: true,
+              label: "设备id",
+              prop: "deviceId",
+              rules: [{
+                required: true,
+                message: "请输入设备id",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "设备名称",
+              prop: "deviceName",
               search: true,
               rules: [{
                 required: true,
-                message: "请输入通知标题",
+                message: "请输入设备名称",
                 trigger: "blur"
               }]
             },
             {
-              label: "通知类型",
-              type: "select",
-              row: true,
-              dicUrl: "/api/blade-system/dict/dictionary?code=notice",
-              props: {
-                label: "dictValue",
-                value: "dictKey"
-              },
-              slot: true,
-              prop: "category",
-              search: true,
+              label: "设备信息",
+              prop: "additionalInfo",
               rules: [{
                 required: true,
-                message: "请输入通知类型",
+                message: "请输入设备信息",
                 trigger: "blur"
               }]
             },
             {
-              label: "通知日期",
-              prop: "releaseTime",
-              type: "date",
-              format: "yyyy-MM-dd hh:mm:ss",
-              valueFormat: "yyyy-MM-dd hh:mm:ss",
+              label: "垃圾桶状态",
+              prop: "ashbinStatus",
               rules: [{
                 required: true,
-                message: "请输入通知日期",
+                message: "请输入垃圾桶状态",
                 trigger: "blur"
               }]
             },
             {
-              label: "通知内容",
-              prop: "content",
-              span: 24,
-              minRows: 6,
-              type: "textarea"
-            }
+              label: "总压",
+              prop: "pOrigin",
+              rules: [{
+                required: true,
+                message: "请输入总压",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "分压(数组)",
+              prop: "pBranch",
+              rules: [{
+                required: true,
+                message: "请输入分压(数组)",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "用户id",
+              prop: "userId",
+              rules: [{
+                required: true,
+                message: "请输入用户id",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "最后上传时间",
+              prop: "lastUpdateTime",
+              rules: [{
+                required: true,
+                message: "请输入最后上传时间",
+                trigger: "blur"
+              }]
+            },
+            {
+              label: "创建时间",
+              prop: "createTime",
+              rules: [{
+                required: true,
+                message: "请输入创建时间",
+                trigger: "blur"
+              }]
+            },
           ]
         },
         data: []
@@ -111,10 +144,10 @@
       ...mapGetters(["permission"]),
       permissionList() {
         return {
-          addBtn: this.vaildData(this.permission.notice_add, false),
-          viewBtn: this.vaildData(this.permission.notice_view, false),
-          delBtn: this.vaildData(this.permission.notice_delete, false),
-          editBtn: this.vaildData(this.permission.notice_edit, false)
+          addBtn: this.vaildData(this.permission.ashbin_add, false),
+          viewBtn: this.vaildData(this.permission.ashbin_view, false),
+          delBtn: this.vaildData(this.permission.ashbin_delete, false),
+          editBtn: this.vaildData(this.permission.ashbin_edit, false)
         };
       },
       ids() {
@@ -169,17 +202,6 @@
             });
           });
       },
-      searchReset() {
-        this.query = {};
-        this.onLoad(this.page);
-      },
-      searchChange(params) {
-        this.query = params;
-        this.onLoad(this.page, params);
-      },
-      selectionChange(list) {
-        this.selectionList = list;
-      },
       handleDelete() {
         if (this.selectionList.length === 0) {
           this.$message.warning("请选择至少一条数据");
@@ -203,13 +225,29 @@
           });
       },
       beforeOpen(done, type) {
-        console.log("before")
+        console.log('beforeopen')
         if (["edit", "view"].includes(type)) {
-          getNotice(this.form.id).then(res => {
+          getDetail(this.form.id).then(res => {
             this.form = res.data.data;
           });
         }
         done();
+      },
+      searchReset() {
+        this.query = {};
+        this.onLoad(this.page);
+      },
+      searchChange(params) {
+        console.log(params)
+        this.query = params;
+        this.onLoad(this.page, params);
+      },
+      selectionChange(list) {
+        this.selectionList = list;
+      },
+      selectionClear() {
+        this.selectionList = [];
+        this.$refs.crud.toggleSelection();
       },
       currentChange(currentPage){
         this.page.currentPage = currentPage;
@@ -218,10 +256,16 @@
         this.page.pageSize = pageSize;
       },
       onLoad(page, params = {}) {
+        this.loading = true;
+        console.log('onload')
+        // this.query['deviceType'] = '垃圾桶'
         getList(page.currentPage, page.pageSize, Object.assign(params, this.query)).then(res => {
+          console.log(this.query)
           const data = res.data.data;
           this.page.total = data.total;
           this.data = data.records;
+          this.loading = false;
+          this.selectionClear();
         });
       }
     }

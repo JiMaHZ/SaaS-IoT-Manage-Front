@@ -5,7 +5,7 @@
            ref="loginForm"
            :model="loginForm"
            label-width="0">
-    <el-form-item v-if="tenantMode" prop="tenantId">
+    <!-- <el-form-item v-if="tenantMode" prop="tenantId">
       <el-input size="small"
                 @keyup.enter.native="handleLogin"
                 v-model="loginForm.tenantId"
@@ -14,7 +14,7 @@
         <i slot="prefix"
            class="icon-quanxian"></i>
       </el-input>
-    </el-form-item>
+    </el-form-item> -->
     <el-form-item prop="username">
       <el-input size="small"
                 @keyup.enter.native="handleLogin"
@@ -59,8 +59,8 @@
         tenantMode: website.tenantMode,
         loginForm: {
           tenantId: "000000",
-          username: "admin",
-          password: "admin",
+          username: "test",
+          password: "123456",
           type: "account"
         },
         loginRules: {

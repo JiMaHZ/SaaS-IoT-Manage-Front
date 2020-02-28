@@ -9,6 +9,7 @@ module.exports = {
       'vuex': 'Vuex',
       'axios': 'axios',
       'element-ui': 'ELEMENT',
+      'AMap': 'AMap',
     })
     const entry = config.entry('app')
     entry
@@ -27,7 +28,7 @@ module.exports = {
     // 反向代理配置
     proxy: {
       '/api': {
-        target: 'http://localhost',
+        target: 'http://localhost:38080',
         ws: true,
         pathRewrite: {
           '^/api': '/'

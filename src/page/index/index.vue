@@ -26,14 +26,19 @@
 
       </div>
     </div>
-    <!-- <el-footer class="avue-footer">
+
+    <!-- <el-footer class="avue-footer"> -->
+    <div class="avue-footer " z-index="99">
       <img src="/svg/logo.svg"
            alt=""
            class="logo">
       <p class="copyright">© 2018 Avue designed by smallwei</p>
-    </el-footer> -->
+    </div> 
+
+    <!-- </el-footer>  -->
     <div class="avue-shade"
-         @click="showCollapse"></div>
+         @click="showCollapse">
+    </div>
   </div>
 </template>
 

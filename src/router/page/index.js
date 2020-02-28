@@ -73,6 +73,14 @@ export default [{
     }]
 
 },
+//新增
+// {
+//     path: '/deviceManagement/devices/deviceData',
+//     // component: () =>
+//     //     import( /* webpackChunkName: "page" */ '@/views/deviceManagement/deviceData'),
+//     name: 'deviceData',
+//     redirect: '/deviceManagement/devices/deviceData',
+// },
 {
     path: '*',
     redirect: '/404'
