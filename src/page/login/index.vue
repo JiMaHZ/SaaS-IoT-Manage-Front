@@ -33,6 +33,9 @@
 
       </div>
     </div>
+    <div class="footer">
+        <p class="copyright">© 2020 浙ICP备20003474号-1</p>
+    </div>
   </div>
 </template>
 <script>
@@ -99,4 +102,25 @@ export default {
 
 <style lang="scss">
 @import "@/styles/login.scss";
+</style>
+
+<style scoped>
+.footer {
+  font-size: 10px;
+  /* line-height: 20px; */
+  /* margin-bottom: 10px; */
+  margin-bottom: 0px;
+  border: 0px;
+  position: fixed;
+  left: 0%;
+  bottom: 0px;
+  width: 100%;
+  height: 20px;
+  background-color: rgb(236, 233, 233,0.5);
+  z-index: 10;
+  text-align: center;
+}
+.copyright{
+  margin: 0;
+}
 </style>

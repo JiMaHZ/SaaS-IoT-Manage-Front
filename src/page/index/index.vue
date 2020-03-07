@@ -28,12 +28,16 @@
     </div>
 
     <!-- <el-footer class="avue-footer"> -->
-    <div class="avue-footer " z-index="99">
+    <!-- <div class="avue-footer " z-index="99">
       <img src="/svg/logo.svg"
            alt=""
            class="logo">
       <p class="copyright">© 2018 Avue designed by smallwei</p>
-    </div> 
+    </div>  -->
+
+    <div class="footer">
+        <p class="copyright">© 2020 浙ICP备20003474号-1</p>
+    </div>
 
     <!-- </el-footer>  -->
     <div class="avue-shade"
@@ -113,3 +117,24 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.footer {
+  font-size: 10px;
+  /* line-height: 20px; */
+  /* margin-bottom: 10px; */
+  margin-bottom: 0px;
+  border: 0px;
+  position: fixed;
+  left: 0%;
+  bottom: 0px;
+  width: 100%;
+  height: 20px;
+  background-color: rgb(236, 233, 233,0.5);
+  z-index: 10;
+  text-align: center;
+}
+.copyright{
+  margin: 0;
+}
+</style>

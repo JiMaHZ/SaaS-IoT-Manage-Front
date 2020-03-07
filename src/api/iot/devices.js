@@ -49,3 +49,29 @@ export const getDeviceById = (deviceId) => {
     }
   })
 }
+
+export const saveOrUpdateDeviceKey = (row) => {
+  return request({
+    url: '/api/iot/deviceKey/submit',
+    method: 'post',
+    data: row
+  })
+}
+
+export const updateDeviceKey = (row) => {
+  return request({
+    url: '/api/iot/deviceKey/update',
+    method: 'post',
+    data: row
+  })
+}
+
+export const getDeviceKeyList = (deviceId) => {
+  return request({
+    url: '/api/iot/deviceKey/listWithValue',
+    method: 'get',
+    params: {
+      deviceId
+    }
+  })
+}
