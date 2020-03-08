@@ -66,6 +66,17 @@ export const updateDeviceKey = (row) => {
   })
 }
 
+export const removeDeviceKey = (deviceId,deviceKey) => {
+  return request({
+    url: '/api/iot/deviceKey/remove',
+    method: 'post',
+    params: {
+      deviceId,
+      deviceKey
+    }
+  })
+}
+
 export const getDeviceKeyList = (deviceId) => {
   return request({
     url: '/api/iot/deviceKey/listWithValue',

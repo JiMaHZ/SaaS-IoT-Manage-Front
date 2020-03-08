@@ -318,7 +318,7 @@
 // import mailTable from '@/components/utils/tableComponent.vue' v-if="index < 10"
 import {getDetail} from "@/api/iot/devicestatus";
 import {getDeviceById,getNoBindList,bindDeviceId,unbindDeviceId} from "@/api/iot/devices"; //网关相关
-import {saveOrUpdateDeviceKey,getDeviceKeyList} from "@/api/iot/devices";      //key相关
+import {saveOrUpdateDeviceKey,getDeviceKeyList,removeDeviceKey} from "@/api/iot/devices";      //key相关
 
 export default {
     components: {
@@ -852,11 +852,16 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
             }).then(() => {
-                this.tags.splice(tag.index,1)
-                this.$message({
-                    type: 'success',
-                    message: '成功删除 '+tag.deviceKey+' !'
-                });
+                removeDeviceKey(this.$route.query.deviceId,tag.deviceKey).then(res=>{
+                    console.log(res)
+                    if(res.data.code === 200){
+                        this.tags.splice(tag.index,1)
+                        this.$message({
+                            type: 'success',
+                            message: '成功删除 '+tag.deviceKey+' !'
+                        });
+                    }
+                })
             }).catch(() => {
 
             });
